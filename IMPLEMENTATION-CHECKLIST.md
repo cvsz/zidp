@@ -1,70 +1,163 @@
-# Implementation Checklist
+# ZIdentity Production Implementation Checklist
 
-Use this checklist after creating a repository from `ztemplate`.
+This checklist is the release gate for `cvsz/zidentity`. A checked documentation item is not evidence that the underlying implementation exists; each implemented control requires test and deployment evidence.
 
-## Repository identity
+## Repository and governance
 
-- [ ] Replace `ztemplate` references with the real project name.
-- [ ] Replace template descriptions and badges.
-- [ ] Confirm license ownership and year.
-- [ ] Configure repository topics, description, homepage, and template status.
+- [x] Repository identity is `cvsz/zidentity`.
+- [x] Product scope is documented as ZeaZ Identity & Account Security Platform.
+- [x] `AGENTS.md` defines the repository/security contract.
+- [x] Canonical AI production prompt exists at `docs/AI_MASTER_PRODUCTION_PROMPT.md`.
+- [ ] Configure CODEOWNERS for security-sensitive paths.
+- [ ] Configure protected `main` branch/ruleset with required checks and review.
 
-## Ownership and governance
+## Identity foundation
 
-- [ ] Update `.github/CODEOWNERS`.
-- [ ] Review `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`.
-- [ ] Configure branch protection or repository rulesets.
-- [ ] Require pull request review where appropriate.
-- [ ] Require passing status checks before merge.
+- [ ] Account lifecycle implementation
+- [ ] Identity/profile implementation
+- [ ] Opaque identifiers
+- [ ] Tenant/application isolation
+- [ ] Credential lifecycle
 
-## Security
+## Authentication
 
-- [ ] Review `SECURITY.md` and configure private vulnerability reporting.
-- [ ] Enable Dependabot alerts and security updates.
-- [ ] Review CodeQL language detection/support for the actual stack.
-- [ ] Keep dependency review enabled for pull requests where supported.
-- [ ] Configure secret scanning and push protection where available.
-- [ ] Add stack-specific SAST, container, IaC, and SBOM checks as needed.
-- [ ] Confirm Actions permissions follow least privilege.
+- [ ] WebAuthn/passkey registration
+- [ ] WebAuthn/passkey authentication
+- [ ] FIDO2/security-key lifecycle
+- [ ] Password fallback using Argon2id or an equivalent approved memory-hard scheme
+- [ ] TOTP enrollment/verification
+- [ ] MFA enrollment/recovery policy
+- [ ] Credential abuse/rate limiting
+- [ ] Authentication event audit
 
-## Development
+## Device and session security
 
-- [ ] Select the language/runtime and package manager.
-- [ ] Add formatter and linter configuration.
-- [ ] Add unit, integration, and end-to-end tests as appropriate.
-- [ ] Replace placeholder Makefile targets with real commands.
-- [ ] Replace or remove the placeholder Dockerfile.
-- [ ] Populate `.env.example` with safe non-secret keys only.
+- [ ] Device registration
+- [ ] Trusted-device lifecycle
+- [ ] Lost/revoked device handling
+- [ ] Secure browser sessions
+- [ ] Session rotation
+- [ ] Global session revocation
+- [ ] Refresh-token rotation/reuse detection where applicable
+
+## Risk and step-up authentication
+
+- [ ] Risk-signal model
+- [ ] Versioned risk policy
+- [ ] Low/medium/high/critical decisions
+- [ ] Step-up authentication
+- [ ] Security delay for high-risk mutations
+- [ ] High-risk/stolen-device protection
+- [ ] Security regression tests
+
+## Recovery
+
+- [ ] Cryptographically secure recovery-key generation
+- [ ] No plaintext recovery-key storage
+- [ ] Recovery-contact enrollment
+- [ ] Recovery-contact quorum policy
+- [ ] Recovery state machine
+- [ ] Recovery security delay
+- [ ] Credential reset and session revocation
+- [ ] Recovery notifications
+- [ ] Recovery abuse detection
+
+## OAuth/OIDC
+
+- [ ] Authorization Code + PKCE
+- [ ] OIDC authentication
+- [ ] Scope and audience restrictions
+- [ ] Consent management
+- [ ] Client registration/lifecycle
+- [ ] Token revocation
+- [ ] Refresh-token policy
+- [ ] Service-account/M2M authentication
+- [ ] Redirect URI validation
+- [ ] OAuth security regression suite
+
+## Authorization
+
+- [ ] RBAC
+- [ ] ABAC/policy evaluation where required
+- [ ] Least-privilege scopes
+- [ ] Privileged operation step-up
+- [ ] Support/admin separation
+- [ ] Time-limited support access
+- [ ] Full privileged-operation audit
+
+## Data protection
+
+- [ ] TLS 1.3 where supported
+- [ ] Vetted authenticated encryption
+- [ ] Secret manager integration
+- [ ] Key hierarchy documented
+- [ ] Key rotation procedure
+- [ ] Data minimization/retention policy
+- [ ] Sensitive-field redaction in logs
+
+## Security engineering
+
+- [ ] Threat model completed
+- [ ] Account-takeover tests
+- [ ] Credential-stuffing tests
+- [ ] Session/token replay tests
+- [ ] OAuth abuse tests
+- [ ] Recovery abuse tests
+- [ ] Authorization boundary tests
+- [ ] Tenant-isolation tests
+- [ ] Supply-chain controls
+- [ ] Secret scanning/push protection
+
+## Observability and operations
+
+- [ ] Structured security events
+- [ ] Metrics
+- [ ] Tracing
+- [ ] Alerting
+- [ ] Backup procedure
+- [ ] Restore verification
+- [ ] Disaster recovery procedure
+- [ ] Incident response procedure
+- [ ] Security-event retention policy
 
 ## CI/CD
 
-- [ ] Customize CI for the selected stack.
-- [ ] Pin runtime versions and define supported-version matrices.
-- [ ] Add build and package validation.
-- [ ] Add artifact retention settings where needed.
-- [ ] Configure environments, approvals, and deployment protections.
-- [ ] Verify workflows from forks do not receive unsafe credentials.
-
-## Release
-
-- [ ] Decide on Semantic Versioning or another explicit versioning policy.
-- [ ] Configure changelog and release-note generation.
-- [ ] Configure package/container publishing only when needed.
-- [ ] Add provenance, signing, and attestations for production artifacts where appropriate.
-- [ ] Document rollback procedures.
+- [ ] Formatting/lint
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] E2E tests
+- [ ] Security tests
+- [ ] CodeQL/SAST
+- [ ] Dependency review
+- [ ] Container scanning
+- [ ] IaC scanning
+- [ ] SBOM generation
+- [ ] Artifact provenance/signing where supported
+- [ ] Least-privilege GitHub Actions permissions
+- [ ] Fork/untrusted-PR secret isolation
 
 ## Documentation
 
-- [ ] Complete `docs/architecture.md`.
-- [ ] Complete `docs/development.md`.
-- [ ] Complete `docs/release.md`.
-- [ ] Add ADRs for material architectural decisions.
-- [ ] Document operational ownership and support expectations.
+- [x] README describes actual target product.
+- [x] Architecture document updated from generic template to ZIdentity architecture.
+- [x] AI production prompt is canonicalized.
+- [ ] Development guide reflects actual implementation.
+- [ ] Release guide reflects actual deployment/recovery process.
+- [ ] Threat model is versioned.
+- [ ] API contract is documented.
+- [ ] Recovery runbook is documented.
+- [ ] ADRs exist for material architecture decisions.
 
-## Final verification
+## Final production gate
 
-- [ ] Fresh clone works with documented bootstrap steps.
-- [ ] CI passes on `main` and pull requests.
-- [ ] No secrets or private information are committed.
-- [ ] Security checks are enabled and passing.
-- [ ] A release can be created and rolled back according to documentation.
+- [ ] Fresh clone/bootstrap verified
+- [ ] Full test suite passes
+- [ ] Security suite passes
+- [ ] No critical/high unresolved security defect without approved exception
+- [ ] Migration plan verified
+- [ ] Deployment verified
+- [ ] Rollback verified
+- [ ] Backup restore verified
+- [ ] Monitoring/alerting verified
+- [ ] Release artifacts traceable to source
+- [ ] Production readiness evidence recorded
