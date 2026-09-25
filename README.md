@@ -1,19 +1,18 @@
-# ZIdentity
+# ZIDP — ZeaZ Identity Provider
 
-**ZeaZ Identity & Account Security Platform** — the central identity, authentication, authorization, device-trust, recovery, and security-control plane for the ZeaZ ecosystem.
+**ZeaZ Identity Provider (ZIDP)** is the central identity, authentication, authorization, device-trust, recovery, federation, and account-security plane for the ZeaZ ecosystem.
 
-- Repository: `cvsz/zidentity`
-- User portal: `account.zeaz.dev`
+- Repository: `cvsz/zidp`
+- User portal: `https://account.zeaz.dev`
 - Protocol target: OAuth 2.1 + OpenID Connect
 - Authentication target: Passkeys/WebAuthn, FIDO2/security keys, MFA, and controlled password fallback
 - Deployment target: self-hosted, cloud-native, cost-efficient ZeaZ infrastructure
 
-> **Security note:** This project implements standards-based identity capabilities inspired by modern account-security products. It does not copy Apple proprietary implementation, protocols, source code, UI, or branding.
+> **Security note:** ZIDP implements standards-based identity capabilities inspired by modern account-security products. It does not copy Apple proprietary implementation, protocols, source code, UI, or branding.
 
 ## Product scope
 
-ZIdentity provides:
-
+ZIDP provides:
 - Account and identity lifecycle
 - Passkeys / WebAuthn / FIDO2
 - TOTP MFA and security keys
@@ -37,12 +36,11 @@ ZIdentity provides:
 ```text
                          account.zeaz.dev
                                │
-                    ZIdentity / OIDC / OAuth 2.1
+                         ZIDP / OIDC
                                │
           ┌────────────────────┼────────────────────┐
           │                    │                    │
         zPay                zWallet              zTTato
-          │                    │                    │
         zBiz                  zVeo               ZTrader
           │                    │                    │
           └────────────────────┼────────────────────┘
@@ -56,29 +54,27 @@ Applications receive only the identity claims/scopes they require. Recovery secr
 
 Security-sensitive operations use recent authentication and may require phishing-resistant step-up authentication, trusted-device confirmation, security delay, or additional policy checks. Account recovery is a separate state machine and must never become an authentication bypass.
 
-The project follows the engineering direction in `AGENTS.md` and the canonical AI implementation contract in [`docs/AI_MASTER_PRODUCTION_PROMPT.md`](docs/AI_MASTER_PRODUCTION_PROMPT.md).
+The canonical AI implementation contract is `docs/AI_MASTER_PRODUCTION_PROMPT.md`; repository behavior is governed by `AGENTS.md`.
 
-Relevant standards and guidance include WebAuthn/FIDO2, OAuth 2.1, OpenID Connect, OWASP ASVS/API Security, and NIST digital-identity guidance. Standards are implementation targets; exact conformance must be verified against the deployed components and test suite.
+Relevant standards and guidance include WebAuthn/FIDO2, OAuth 2.1, OpenID Connect, OWASP ASVS/API Security, and NIST digital-identity guidance. Exact conformance must be verified against deployed components and tests.
 
 ## Repository structure
 
 ```text
-.github/                       GitHub automation and governance
+.github/
 docs/
-  adr/                         Architecture Decision Records
+  adr/
   AI_MASTER_PRODUCTION_PROMPT.md
   architecture.md
   development.md
   release.md
-AGENTS.md                      Agent/repository contract
-SECURITY.md                    Vulnerability reporting and security policy
-IMPLEMENTATION-CHECKLIST.md    Production implementation gate
-ROADMAP.md                     Delivery roadmap
+AGENTS.md
+SECURITY.md
+IMPLEMENTATION-CHECKLIST.md
+ROADMAP.md
 ```
 
-Implementation components should be added under clearly bounded domains rather than creating speculative scaffolding.
-
-## Development principles
+## Engineering principles
 
 - Secure by default
 - Least privilege
@@ -98,9 +94,8 @@ Implementation components should be added under clearly bounded domains rather t
 A production-ready claim requires evidence from implementation, tests, security checks, deployment validation, and rollback readiness. Documentation or badges alone are not evidence of readiness.
 
 See:
-
-- [`docs/AI_MASTER_PRODUCTION_PROMPT.md`](docs/AI_MASTER_PRODUCTION_PROMPT.md)
-- [`docs/architecture.md`](docs/architecture.md)
-- [`IMPLEMENTATION-CHECKLIST.md`](IMPLEMENTATION-CHECKLIST.md)
-- [`SECURITY.md`](SECURITY.md)
-- [`ROADMAP.md`](ROADMAP.md)
+- [AI Master Production Prompt](docs/AI_MASTER_PRODUCTION_PROMPT.md)
+- [Architecture](docs/architecture.md)
+- [Implementation Checklist](IMPLEMENTATION-CHECKLIST.md)
+- [Security Policy](SECURITY.md)
+- [Roadmap](ROADMAP.md)
