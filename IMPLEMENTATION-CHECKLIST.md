@@ -1,37 +1,34 @@
-# ZIdentity Production Implementation Checklist
+# ZIDP Production Implementation Checklist
 
-This checklist is the release gate for `cvsz/zidentity`. A checked documentation item is not evidence that the underlying implementation exists; each implemented control requires test and deployment evidence.
+This checklist is the release gate for `cvsz/zidp`. A checked documentation item is not evidence that the underlying implementation exists; each implemented control requires test and deployment evidence.
 
 ## Repository and governance
-
-- [x] Repository identity is `cvsz/zidentity`.
-- [x] Product scope is documented as ZeaZ Identity & Account Security Platform.
+- [x] Repository identity is `cvsz/zidp`.
+- [x] Product identity is ZeaZ Identity Provider (ZIDP).
+- [x] Primary portal is `account.zeaz.dev`.
 - [x] `AGENTS.md` defines the repository/security contract.
-- [x] Canonical AI production prompt exists at `docs/AI_MASTER_PRODUCTION_PROMPT.md`.
+- [x] Canonical AI production prompt exists.
 - [ ] Configure CODEOWNERS for security-sensitive paths.
 - [ ] Configure protected `main` branch/ruleset with required checks and review.
 
 ## Identity foundation
-
-- [ ] Account lifecycle implementation
-- [ ] Identity/profile implementation
+- [ ] Account lifecycle
+- [ ] Identity/profile
 - [ ] Opaque identifiers
 - [ ] Tenant/application isolation
 - [ ] Credential lifecycle
 
 ## Authentication
-
 - [ ] WebAuthn/passkey registration
 - [ ] WebAuthn/passkey authentication
 - [ ] FIDO2/security-key lifecycle
-- [ ] Password fallback using Argon2id or an equivalent approved memory-hard scheme
+- [ ] Password fallback using Argon2id or equivalent approved memory-hard scheme
 - [ ] TOTP enrollment/verification
-- [ ] MFA enrollment/recovery policy
+- [ ] MFA policy
 - [ ] Credential abuse/rate limiting
 - [ ] Authentication event audit
 
 ## Device and session security
-
 - [ ] Device registration
 - [ ] Trusted-device lifecycle
 - [ ] Lost/revoked device handling
@@ -41,7 +38,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Refresh-token rotation/reuse detection where applicable
 
 ## Risk and step-up authentication
-
 - [ ] Risk-signal model
 - [ ] Versioned risk policy
 - [ ] Low/medium/high/critical decisions
@@ -51,7 +47,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Security regression tests
 
 ## Recovery
-
 - [ ] Cryptographically secure recovery-key generation
 - [ ] No plaintext recovery-key storage
 - [ ] Recovery-contact enrollment
@@ -63,7 +58,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Recovery abuse detection
 
 ## OAuth/OIDC
-
 - [ ] Authorization Code + PKCE
 - [ ] OIDC authentication
 - [ ] Scope and audience restrictions
@@ -76,7 +70,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] OAuth security regression suite
 
 ## Authorization
-
 - [ ] RBAC
 - [ ] ABAC/policy evaluation where required
 - [ ] Least-privilege scopes
@@ -86,7 +79,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Full privileged-operation audit
 
 ## Data protection
-
 - [ ] TLS 1.3 where supported
 - [ ] Vetted authenticated encryption
 - [ ] Secret manager integration
@@ -96,7 +88,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Sensitive-field redaction in logs
 
 ## Security engineering
-
 - [ ] Threat model completed
 - [ ] Account-takeover tests
 - [ ] Credential-stuffing tests
@@ -109,7 +100,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Secret scanning/push protection
 
 ## Observability and operations
-
 - [ ] Structured security events
 - [ ] Metrics
 - [ ] Tracing
@@ -121,7 +111,6 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Security-event retention policy
 
 ## CI/CD
-
 - [ ] Formatting/lint
 - [ ] Unit tests
 - [ ] Integration tests
@@ -136,20 +125,7 @@ This checklist is the release gate for `cvsz/zidentity`. A checked documentation
 - [ ] Least-privilege GitHub Actions permissions
 - [ ] Fork/untrusted-PR secret isolation
 
-## Documentation
-
-- [x] README describes actual target product.
-- [x] Architecture document updated from generic template to ZIdentity architecture.
-- [x] AI production prompt is canonicalized.
-- [ ] Development guide reflects actual implementation.
-- [ ] Release guide reflects actual deployment/recovery process.
-- [ ] Threat model is versioned.
-- [ ] API contract is documented.
-- [ ] Recovery runbook is documented.
-- [ ] ADRs exist for material architecture decisions.
-
 ## Final production gate
-
 - [ ] Fresh clone/bootstrap verified
 - [ ] Full test suite passes
 - [ ] Security suite passes
