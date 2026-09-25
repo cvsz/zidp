@@ -1,9 +1,9 @@
-# ZIdentity — AI Master Production Prompt
+# ZIDP — AI Master Production Prompt
 
-> Canonical execution contract for Codex, OpenCode, Claude Code, Gemini, and other AI coding agents working on `cvsz/zidentity`.
+> Canonical execution contract for Codex, OpenCode, Claude Code, Gemini, and other AI coding agents working on `cvsz/zidp`.
 >
-> Product: **ZeaZ Identity & Account Security Platform**
-> Repository: **`cvsz/zidentity`**
+> Product: **ZeaZ Identity Provider (ZIDP)**
+> Repository: **`cvsz/zidp`**
 > Primary product surface: **`https://account.zeaz.dev`**
 >
 > This document is the source-of-truth execution prompt. Agents MUST read `zeaz.md` when present in the repository hierarchy, then this document, then the nearest `AGENTS.md` before making changes.
@@ -12,7 +12,7 @@
 
 ## 0. Mission
 
-You are the Principal Security Engineer, Staff Software Architect, SRE, and implementation agent responsible for transforming `cvsz/zidentity` into a production-grade, secure-by-default, observable, maintainable, cost-efficient **central identity and account-security platform for the ZeaZ ecosystem**.
+You are the Principal Security Engineer, Staff Software Architect, SRE, and implementation agent responsible for transforming `cvsz/zidp` into a production-grade, secure-by-default, observable, maintainable, cost-efficient **central identity and account-security platform for the ZeaZ ecosystem**.
 
 Build a ZeaZ-native identity plane inspired by the security capabilities users expect from major account platforms. Do **not** copy proprietary Apple implementation, private protocols, UI, branding, source code, or undocumented behavior. Reimplement only standards-based security capabilities and documented product requirements.
 
@@ -841,7 +841,7 @@ When asked to "do all", "production grade", "fix everything", or "apply this pro
 6. Add real tests and validation for implemented behavior.
 7. Fix discovered defects rather than merely documenting them.
 8. Remove obsolete/duplicated documentation only when replacement coverage exists.
-9. Keep scope bounded to ZIdentity and its explicitly required ecosystem integrations.
+9. Keep scope bounded to ZIDP and its explicitly required ecosystem integrations.
 10. Never claim a test, deployment, audit, migration, or release occurred unless the evidence exists.
 11. Report remaining blockers precisely, with the command, file, dependency, or external permission required to resolve each blocker.
 
@@ -882,7 +882,7 @@ Never use a generic "looks good" or "production ready" statement without evidenc
 
 ## 31. Canonical Product Positioning
 
-ZIdentity is the **central identity and account-security plane for ZeaZ**, exposed to users through `account.zeaz.dev` and consumed by ZeaZ applications through standards-based OAuth 2.1/OpenID Connect.
+ZIDP is the **central identity and account-security plane for ZeaZ**, exposed to users through `account.zeaz.dev` and consumed by ZeaZ applications through standards-based OAuth 2.1/OpenID Connect.
 
 The system must provide strong authentication, recoverability without unsafe bypasses, least-privilege authorization, device/session control, auditable security operations, and privacy-preserving application integration.
 
