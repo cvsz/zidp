@@ -1,11 +1,11 @@
-# ZIdentity Roadmap
+# ZIDP Roadmap
 
-ZIdentity is the central identity and account-security plane for the ZeaZ ecosystem. Delivery is evidence-driven: an item is complete only when implementation, tests, security validation, documentation, and operational evidence exist.
+ZIDP is the central identity and account-security plane for the ZeaZ ecosystem. Delivery is evidence-driven: an item is complete only when implementation, tests, security validation, documentation, and operational evidence exist.
 
 ## Phase 0 — Governance and architecture
-
-- [x] Establish `cvsz/zidentity` product identity
-- [x] Replace generic template README with ZIdentity scope
+- [x] Establish `cvsz/zidp` product identity
+- [x] Set product name to ZeaZ Identity Provider (ZIDP)
+- [x] Set primary portal to `account.zeaz.dev`
 - [x] Establish repository agent/security contract
 - [x] Add canonical AI production master prompt
 - [x] Define central identity architecture
@@ -15,7 +15,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Create threat-model ADRs
 
 ## Phase 1 — Identity foundation
-
 - [ ] Account and identity domain
 - [ ] Tenant/application model
 - [ ] PostgreSQL persistence model
@@ -24,7 +23,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Security-event model
 
 ## Phase 2 — Strong authentication
-
 - [ ] WebAuthn/passkeys
 - [ ] FIDO2/security-key support
 - [ ] TOTP MFA
@@ -33,7 +31,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Authentication event audit
 
 ## Phase 3 — Device, session, and risk security
-
 - [ ] Device lifecycle
 - [ ] Trusted-device management
 - [ ] Secure session architecture
@@ -43,7 +40,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] High-risk/stolen-device protection
 
 ## Phase 4 — Recovery
-
 - [ ] Recovery-key lifecycle
 - [ ] Recovery contacts
 - [ ] Recovery quorum policy
@@ -54,7 +50,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Recovery-abuse detection
 
 ## Phase 5 — Federation and authorization
-
 - [ ] OAuth 2.1 Authorization Code + PKCE
 - [ ] OpenID Connect
 - [ ] Client registration/lifecycle
@@ -66,18 +61,16 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Token revocation and refresh-token controls
 
 ## Phase 6 — ZeaZ ecosystem integration
-
-- [ ] Integrate `zPay`
-- [ ] Integrate `zWallet`
-- [ ] Integrate `zBiz`
-- [ ] Integrate `zTTato`
-- [ ] Integrate `zVeo`
-- [ ] Integrate `ZTrader`
+- [ ] Integrate zPay
+- [ ] Integrate zWallet
+- [ ] Integrate zBiz
+- [ ] Integrate zTTato
+- [ ] Integrate zVeo
+- [ ] Integrate ZTrader
 - [ ] Publish stable identity/API contracts
 - [ ] Establish application-specific scopes and audiences
 
 ## Phase 7 — Operations and security assurance
-
 - [ ] OpenTelemetry instrumentation
 - [ ] Security alerting
 - [ ] Backup/restore verification
@@ -92,7 +85,6 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
 - [ ] Security regression suite
 
 ## Phase 8 — Production release gate
-
 - [ ] Fresh-environment bootstrap verified
 - [ ] Full automated test suite green
 - [ ] Security test suite green
