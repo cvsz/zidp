@@ -1,13 +1,13 @@
-# ZIdentity Architecture
+# ZIDP Architecture
 
 ## 1. System context
 
-ZIdentity is the central identity and account-security plane for the ZeaZ ecosystem. The user-facing portal is `account.zeaz.dev`. ZeaZ applications authenticate and authorize through standards-based OAuth 2.1 and OpenID Connect rather than implementing independent identity stores.
+ZIDP is the central identity and account-security plane for the ZeaZ ecosystem. The user-facing portal is `account.zeaz.dev`. ZeaZ applications authenticate and authorize through standards-based OAuth 2.1 and OpenID Connect rather than implementing independent identity stores.
 
 ```text
                          account.zeaz.dev
                                │
-                    ZIdentity Identity Plane
+                       ZIDP Identity Plane
                                │
           ┌────────────────────┼────────────────────┐
           │                    │                    │
@@ -19,40 +19,32 @@ ZIdentity is the central identity and account-security plane for the ZeaZ ecosys
                  Audit / Risk / Security Control
 ```
 
-ZIdentity is not an Apple implementation. The architecture uses public standards and general security principles; proprietary protocols, source code, UI, and undocumented behavior are explicitly out of scope.
+ZIDP is not an Apple implementation. The architecture uses public standards and general security principles; proprietary protocols, source code, UI, and undocumented behavior are explicitly out of scope.
 
 ## 2. Bounded contexts
 
 ### Identity
-
 Account lifecycle, identity attributes, profile, tenant/application ownership, and account state.
 
 ### Authentication
-
 Passkeys/WebAuthn, FIDO2/security keys, password fallback, TOTP MFA, authentication ceremonies, and credential lifecycle.
 
 ### Device Trust
-
 Device registration, trusted-device state, session association, lost/revoked devices, and security notifications.
 
 ### Risk Engine
-
 Risk signals, policy evaluation, step-up decisions, throttling, and high-risk protection.
 
 ### Recovery
-
 Recovery keys, recovery contacts, recovery requests, verification, security delays, and credential reset.
 
 ### Authorization
-
 OAuth/OIDC scopes, roles, permissions, policies, consent, client lifecycle, service accounts, and privileged access.
 
 ### Audit
-
 Append-only security events, investigation metadata, audit retention, and tamper-evidence controls.
 
 ### Notification
-
 Security alerts and user-visible notifications for sensitive account events.
 
 ## 3. Authentication model
@@ -64,7 +56,6 @@ Authentication is separate from authorization. A valid login does not automatica
 ## 4. Step-up authentication
 
 Sensitive operations require recent authentication and may require stronger authentication or a security delay:
-
 - password changes
 - primary email/phone changes
 - passkey/security-key changes
@@ -101,14 +92,13 @@ NORMAL
   -> NORMAL
 ```
 
-Recovery keys are generated using cryptographically secure randomness and are never stored as plaintext. Recovery contacts may use a configurable quorum policy. Recovery cannot silently bypass the platform's authentication and authorization controls.
+Recovery keys are generated using cryptographically secure randomness and are never stored as plaintext. Recovery contacts may use a configurable quorum policy. Recovery cannot silently bypass authentication and authorization controls.
 
 ## 7. Authorization and federation
 
-ZIdentity acts as the identity provider and authorization server for ZeaZ applications. New browser applications use Authorization Code + PKCE. OIDC provides identity claims; OAuth scopes and audience restrictions limit API access.
+ZIDP acts as the identity provider and authorization server for ZeaZ applications. Browser applications use Authorization Code + PKCE. OIDC provides identity claims; OAuth scopes and audience restrictions limit API access.
 
 Recommended administrative roles:
-
 ```text
 SUPER_ADMIN
 SECURITY_ADMIN
@@ -125,7 +115,6 @@ Support access is time-limited, scope-limited, consent-aware where appropriate, 
 Durable relational state belongs in PostgreSQL. Redis may be used for ephemeral sessions, rate limits, short-lived ceremony state, locks, and cache data when justified.
 
 Core entities include:
-
 ```text
 accounts
 identities
@@ -151,7 +140,7 @@ permissions
 policies
 ```
 
-Entity IDs must be opaque. Ownership and tenant boundaries must be enforced in the domain and persistence layers.
+Entity IDs must be opaque. Ownership and tenant boundaries must be enforced in domain and persistence layers.
 
 Identity data is separated from application-domain data. Clients receive only the claims/scopes required for their function.
 
@@ -165,8 +154,7 @@ No custom cryptographic primitive is permitted.
 
 ## 10. Trust boundaries
 
-Primary trust boundaries are:
-
+Primary trust boundaries:
 1. Unauthenticated internet -> edge/API
 2. Browser -> account portal
 3. Application -> OIDC authorization server
@@ -186,9 +174,7 @@ Apply OWASP API Security and ASVS principles.
 
 ## 12. Observability
 
-Use OpenTelemetry-compatible traces, metrics, and structured logs where supported.
-
-Observe authentication outcomes, MFA, passkey events, recovery, token lifecycle, risk decisions, authorization failures, rate limiting, service failures, and database health.
+Use OpenTelemetry-compatible traces, metrics, and structured logs where supported. Observe authentication outcomes, MFA, passkey events, recovery, token lifecycle, risk decisions, authorization failures, rate limiting, service failures, and database health.
 
 Never place credentials, recovery keys, tokens, session cookies, or unnecessary personal data in telemetry.
 
@@ -200,17 +186,7 @@ The implementation must remain viable in a cost-efficient/self-hosted ZeaZ envir
 
 ## 14. Availability and recovery
 
-Document and test:
-
-- database backups
-- restore verification
-- key rotation
-- secret rotation
-- session/token invalidation during incidents
-- disaster recovery
-- dependency failure behavior
-- degraded mode
-- rollback
+Document and test database backups, restore verification, key rotation, secret rotation, session/token invalidation during incidents, disaster recovery, dependency failure behavior, degraded mode, and rollback.
 
 Security-sensitive operations fail closed when a dependency outage would otherwise create an authorization bypass.
 
@@ -231,4 +207,4 @@ Each material threat requires prevention, detection, response, and regression co
 
 ## 17. Decision records
 
-Material decisions belong under `docs/adr/`. At minimum, create ADRs before adopting a new identity-provider core, changing credential storage strategy, changing token architecture, introducing a new key-management boundary, or materially changing recovery policy.
+Material decisions belong under `docs/adr/`. Create ADRs before adopting a new identity-provider core, changing credential storage strategy, changing token architecture, introducing a new key-management boundary, or materially changing recovery policy.
