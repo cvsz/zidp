@@ -1,10 +1,10 @@
-# AGENTS.md — ZIdentity Repository Agent Contract
+# AGENTS.md — ZIDP Repository Agent Contract
 
 ## Mission
 
-This repository implements **ZeaZ Identity & Account Security Platform (`zidentity`)**, the central identity/security plane for the ZeaZ ecosystem. The primary user surface is `account.zeaz.dev`.
+This repository implements **ZeaZ Identity Provider (ZIDP)**, the central identity and security plane for the ZeaZ ecosystem. The primary user surface is `account.zeaz.dev`.
 
-Agents must treat security, correctness, privacy, and operational safety as first-class requirements. Read `zeaz.md` when present in the repository hierarchy, then `docs/AI_MASTER_PRODUCTION_PROMPT.md`, then this file before making substantial changes.
+Agents must read `zeaz.md` when present in the repository hierarchy, then `docs/AI_MASTER_PRODUCTION_PROMPT.md`, then this file before substantial changes.
 
 ## Operating rules
 
@@ -27,27 +27,15 @@ Agents must treat security, correctness, privacy, and operational safety as firs
 
 ## Product architecture
 
-The intended bounded contexts are:
+The intended bounded contexts are Identity, Authentication, Authorization, Device Trust, Risk Engine, Recovery, Notification, Audit, OAuth/OIDC federation, and Administration.
 
-- Identity
-- Authentication
-- Authorization
-- Device Trust
-- Risk Engine
-- Recovery
-- Notification
-- Audit
-- OAuth/OIDC federation
-- Administration
-
-Preferred infrastructure direction is PostgreSQL for durable state, Redis only where justified for ephemeral state/coordination, Vault/KMS-compatible secret management, Docker/Kubernetes-compatible deployment, Terraform for infrastructure, and OpenTelemetry-compatible observability. Existing repository choices take precedence when they are secure and maintainable.
+Preferred infrastructure direction is PostgreSQL for durable state, Redis only where justified for ephemeral state/coordination, Vault/KMS-compatible secret management, Docker/Kubernetes-compatible deployment, Terraform for infrastructure, and OpenTelemetry-compatible observability. Existing repository choices take precedence when secure and maintainable.
 
 A mature standards-compliant identity provider such as Keycloak may be evaluated instead of implementing protocol primitives from scratch. Such a decision requires an ADR and must preserve ZeaZ-specific security policy, UX, audit, and integration boundaries.
 
 ## Security requirements
 
-ZIdentity targets:
-
+ZIDP targets:
 - WebAuthn / passkeys / FIDO2
 - TOTP MFA and hardware security keys
 - Trusted-device lifecycle
@@ -66,8 +54,6 @@ Sensitive operations such as credential changes, MFA removal, recovery changes, 
 
 ## Change-safety gate
 
-For non-trivial changes:
-
 1. Inspect current implementation and trust boundaries.
 2. Identify authentication/authorization impact.
 3. Identify data migration and compatibility impact.
@@ -81,19 +67,12 @@ For non-trivial changes:
 
 ## Verification
 
-At minimum, touched Markdown/YAML/configuration must be syntactically valid. Workflows must use least-privilege permissions. Secrets and sensitive data must not enter source control. Authentication and authorization behavior must have automated coverage. Documentation must describe actual implementation rather than aspirational functionality.
+Touched Markdown/YAML/configuration must be syntactically valid. Workflows must use least-privilege permissions. Secrets and sensitive data must not enter source control. Authentication and authorization behavior must have automated coverage. Documentation must describe actual implementation rather than aspirational functionality.
 
 ## Pull requests and releases
 
-PRs should state scope, tests, security impact, compatibility/migration impact, documentation impact, deployment impact, and rollback. Releases require evidence from passing required checks and release validation. Never claim a deployment, audit, migration, or production readiness state without exact evidence.
-
-## Documentation ownership
-
-- `.github/`: GitHub automation and repository governance.
-- `docs/`: architecture, security, development, operations, release, recovery, API, and ADR documentation.
-- Root Markdown: repository policy, lifecycle, security, and project-level guidance.
-- `docs/AI_MASTER_PRODUCTION_PROMPT.md`: canonical AI execution contract for the complete ZIdentity target architecture.
+PRs should state scope, tests, security impact, compatibility/migration impact, documentation impact, deployment impact, and rollback. Releases require evidence from passing required checks and release validation. Never claim deployment, audit, migration, or production readiness without exact evidence.
 
 ## No scope drift
 
-Do not turn ZIdentity into a general application framework or unrelated ZeaZ business service. Integrations with zPay, zWallet, zBiz, zTTato, zVeo, ZTrader, and other applications belong at explicit identity/API trust boundaries.
+Do not turn ZIDP into a general application framework or unrelated ZeaZ business service. Integrations with zPay, zWallet, zBiz, zTTato, zVeo, ZTrader, and other applications belong at explicit identity/API trust boundaries.
