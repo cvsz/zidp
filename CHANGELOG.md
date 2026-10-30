@@ -5,14 +5,29 @@ All notable changes to ZIDP should be documented here. The format follows Keep a
 ## [Unreleased]
 
 ### Added
+- Local-only Keycloak 26.8.1 and PostgreSQL 17.11 development runtime with an isolated OIDC realm
+- OIDC smoke tests for issuer discovery, JWKS, PKCE S256, exact redirect rejection, and disabled implicit/password grants
+- ADR documenting the protocol-engine boundary and deferred production adoption
+- CI integration job that starts the local IdP with ephemeral credentials and removes its database volume after testing
+
+### Changed
+- Replaced placeholder Makefile targets with real local development lifecycle commands
+- Moved Docker image dependency monitoring to the local runtime directory
+
+### Security
+- Bound the local IdP port to loopback and isolated its Docker network
+- Disabled implicit flow, Resource Owner Password Credentials, and service accounts in the sample public client
+- Kept tenant authorization, production credentials, and production issuer configuration out of the development realm
+
+### Existing product definition
 - ZIDP product definition as the central ZeaZ Identity Provider and account-security plane
 - Canonical AI production master prompt covering authentication, recovery, OAuth/OIDC, authorization, device trust, risk, audit, privacy, operations, testing, and release gates
 - Production architecture covering identity, authentication, authorization, device trust, risk, recovery, notifications, and audit bounded contexts
 - Production implementation checklist and phased delivery roadmap
 
 ### Changed
-- Renamed product/repository references from ZIdentity/`cvsz/zidentity` to ZIDP/`cvsz/zidp`
-- Set canonical user portal to `account.zeaz.dev`
+- Renamed product/repository references from ZIdentity/cvsz/zidentity to ZIDP/cvsz/zidp
+- Set canonical user portal to account.zeaz.dev
 - Updated repository governance and architecture documentation to use ZIDP terminology
 
 ### Security

@@ -1,15 +1,28 @@
 # ZIDP Production Implementation Checklist
 
-This checklist is the release gate for `cvsz/zidp`. A checked documentation item is not evidence that the underlying implementation exists; each implemented control requires test and deployment evidence.
+This checklist is the release gate for cvsz/zidp. A checked documentation item is not evidence that the underlying implementation exists; each implemented control requires test and deployment evidence.
 
 ## Repository and governance
-- [x] Repository identity is `cvsz/zidp`.
+- [x] Repository identity is cvsz/zidp.
 - [x] Product identity is ZeaZ Identity Provider (ZIDP).
-- [x] Primary portal is `account.zeaz.dev`.
-- [x] `AGENTS.md` defines the repository/security contract.
+- [x] Primary portal target is account.zeaz.dev.
+- [x] AGENTS.md defines the repository/security contract.
 - [x] Canonical AI production prompt exists.
 - [ ] Configure CODEOWNERS for security-sensitive paths.
-- [ ] Configure protected `main` branch/ruleset with required checks and review.
+- [ ] Configure protected main branch/ruleset with required checks and review.
+
+## Local development foundation (not a production gate)
+- [x] Local-only Keycloak 26.8.1 runtime definition
+- [x] PostgreSQL-backed local development persistence definition
+- [x] Realm import with one exact loopback public-client redirect
+- [x] PKCE S256 configured for the sample browser client
+- [x] Implicit flow, password grant, and service accounts disabled in the sample client
+- [x] Standard-library OIDC discovery/JWKS/negative-admission smoke test added
+- [x] CI job added to execute the isolated local runtime with ephemeral credentials
+- [ ] Hosted exact-head runtime CI executed successfully
+- [ ] Independent security review of the runtime and realm import completed
+
+These local-development checks do not complete the production OAuth/OIDC, identity, authentication, or tenant-isolation requirements below.
 
 ## Identity foundation
 - [ ] Account lifecycle
@@ -58,8 +71,8 @@ This checklist is the release gate for `cvsz/zidp`. A checked documentation item
 - [ ] Recovery abuse detection
 
 ## OAuth/OIDC
-- [ ] Authorization Code + PKCE
-- [ ] OIDC authentication
+- [ ] Production Authorization Code + PKCE integration
+- [ ] Production OIDC authentication
 - [ ] Scope and audience restrictions
 - [ ] Consent management
 - [ ] Client registration/lifecycle

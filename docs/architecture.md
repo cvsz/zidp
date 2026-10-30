@@ -2,20 +2,20 @@
 
 ## 1. System context
 
-ZIDP is the central identity and account-security plane for the ZeaZ ecosystem. The user-facing portal is `account.zeaz.dev`. ZeaZ applications authenticate and authorize through standards-based OAuth 2.1 and OpenID Connect rather than implementing independent identity stores.
+ZIDP is the central identity and account-security plane for the ZeaZ ecosystem. The user-facing portal target is account.zeaz.dev. ZeaZ applications are intended to authenticate through standards-based OAuth 2.1 and OpenID Connect rather than implementing independent identity stores.
 
 ```text
                          account.zeaz.dev
-                               │
+                               |
                        ZIDP Identity Plane
-                               │
-          ┌────────────────────┼────────────────────┐
-          │                    │                    │
+                               |
+          +--------------------+--------------------+
+          |                    |                    |
         zPay                zWallet              zTTato
         zBiz                  zVeo               ZTrader
-          │                    │                    │
-          └────────────────────┼────────────────────┘
-                               │
+          |                    |                    |
+          +--------------------+--------------------+
+                               |
                  Audit / Risk / Security Control
 ```
 
@@ -96,7 +96,7 @@ Recovery keys are generated using cryptographically secure randomness and are ne
 
 ## 7. Authorization and federation
 
-ZIDP acts as the identity provider and authorization server for ZeaZ applications. Browser applications use Authorization Code + PKCE. OIDC provides identity claims; OAuth scopes and audience restrictions limit API access.
+ZIDP is intended to act as the identity provider and authorization server for ZeaZ applications. Browser applications should use Authorization Code + PKCE. OIDC provides identity claims; OAuth scopes and audience restrictions limit API access.
 
 Recommended administrative roles:
 ```text
@@ -108,7 +108,7 @@ AUDITOR
 READ_ONLY
 ```
 
-Support access is time-limited, scope-limited, consent-aware where appropriate, and fully audited. There is no unrestricted master-password or hidden `god mode` design.
+Support access is time-limited, scope-limited, consent-aware where appropriate, and fully audited. There is no unrestricted master-password or hidden god-mode design.
 
 ## 8. Data/storage model
 
@@ -207,4 +207,12 @@ Each material threat requires prevention, detection, response, and regression co
 
 ## 17. Decision records
 
-Material decisions belong under `docs/adr/`. Create ADRs before adopting a new identity-provider core, changing credential storage strategy, changing token architecture, introducing a new key-management boundary, or materially changing recovery policy.
+Material decisions belong under docs/adr/. Create ADRs before adopting a new identity-provider core, changing credential storage strategy, changing token architecture, introducing a new key-management boundary, or materially changing recovery policy.
+
+## 18. Current executable boundary
+
+The first executable protocol fixture is an isolated local-development Keycloak 26.8.1 runtime backed by PostgreSQL 17.11. It is configured through infra/dev/docker-compose.yml and imports the zeaz-dev realm. Its public browser client has one exact loopback redirect URI, Authorization Code flow, and PKCE S256; implicit flow, password grant, and service accounts are disabled.
+
+The fixture is loopback-bound, uses an internal Docker network, and requires locally generated administrator/database passwords. It is not the account.zeaz.dev issuer and must not be exposed through DNS, a tunnel, or production traffic.
+
+Keycloak is the protocol engine only. ZeaZ-specific tenant membership, authorization policy, risk/step-up policy, recovery, audit integration, notifications, account portal, and application adapters are not implemented by this change. Production adoption requires a separate security/deployment ADR and operator approval.

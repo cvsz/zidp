@@ -51,4 +51,39 @@ jobs:
       - name: Validate YAML syntax
         shell: bash
         run: |
+          set -euo pipefail
           ruby -e 'require "yaml"; Dir.glob(".github/**/*.{yml,yaml}").each { |f| YAML.load_file(f); puts "ok #{f}" }'
+
+  local-oidc-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate realm import JSON
+        run: python3 -m json.tool infra/dev/keycloak/zeaz-dev-realm.json >/dev/null
+
+      - name: Generate ephemeral local credentials
+        id: credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'ZIDP_DB_PASSWORD=%s\n' "$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          printf 'ZIDP_ADMIN_USERNAME=%s\n' "ci-local-admin" >> "$GITHUB_ENV"
+          printf 'ZIDP_ADMIN_PASSWORD=%s\n' "$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          printf 'ZIDP_BASE_URL=%s\n' "http://127.0.0.1:8080" >> "$GITHUB_ENV"
+          printf 'ZIDP_REALM=%s\n' "zeaz-dev" >> "$GITHUB_ENV"
+
+      - name: Validate Compose configuration
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml config --quiet
+
+      - name: Start isolated Keycloak and PostgreSQL
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml up -d --wait --wait-timeout 240
+
+      - name: Verify OIDC discovery, JWKS, PKCE and negative grants
+        run: python3 scripts/test-idp-dev.py
+
+      - name: Remove ephemeral runtime and database volume
+        if: always() && steps.credentials.outcome == 'success'
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml down --volumes --remove-orphans

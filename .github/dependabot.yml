@@ -7,7 +7,7 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: docker
-    directory: /
+    directory: /infra/dev
     schedule:
       interval: weekly
     open-pull-requests-limit: 10

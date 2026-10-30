@@ -1,26 +1,26 @@
 SHELL := /bin/sh
+COMPOSE := docker compose --project-directory . -f infra/dev/docker-compose.yml
 
-.PHONY: help setup format lint test build security ci
+.PHONY: help setup dev-up dev-down dev-test dev-reset config
 
 help:
-	@printf '%s\n' 'Targets: setup format lint test build security ci'
+	@printf '%s\n' 'Targets: setup config dev-up dev-test dev-down dev-reset'
 
 setup:
-	@echo 'Replace with project bootstrap command.'
+	@test -f .env || cp .env.example .env
+	@printf '%s\n' 'Edit .env and set unique ZIDP_ADMIN_PASSWORD and ZIDP_DB_PASSWORD values.'
 
-format:
-	@echo 'Replace with project formatter command.'
+config:
+	$(COMPOSE) config --quiet
 
-lint:
-	@echo 'Replace with project lint command.'
+dev-up:
+	$(COMPOSE) up -d --wait --wait-timeout 240
 
-test:
-	@echo 'Replace with project test command.'
+dev-test:
+	python3 scripts/test-idp-dev.py
 
-build:
-	@echo 'Replace with project build command.'
+dev-down:
+	$(COMPOSE) down
 
-security:
-	@echo 'Use repository security workflows and add stack-specific scanners.'
-
-ci: lint test build security
+dev-reset:
+	$(COMPOSE) down --volumes --remove-orphans

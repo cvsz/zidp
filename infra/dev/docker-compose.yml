@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:17.11
+    environment:
+      POSTGRES_DB: zidp
+      POSTGRES_USER: zidp
+      POSTGRES_PASSWORD: ${ZIDP_DB_PASSWORD:?set ZIDP_DB_PASSWORD in .env}
+    volumes:
+      - zidp_dev_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zidp -d zidp"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    networks:
+      - zidp-dev
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.1
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: zidp
+      KC_DB_USERNAME: zidp
+      KC_DB_PASSWORD: ${ZIDP_DB_PASSWORD:?set ZIDP_DB_PASSWORD in .env}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${ZIDP_ADMIN_USERNAME:?set ZIDP_ADMIN_USERNAME in .env}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${ZIDP_ADMIN_PASSWORD:?set ZIDP_ADMIN_PASSWORD in .env}
+      KC_HOSTNAME: http://127.0.0.1:8080
+      KC_HOSTNAME_STRICT: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./keycloak/zeaz-dev-realm.json:/opt/keycloak/data/import/zeaz-dev-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - zidp-dev
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  zidp-dev:
+    internal: true
+
+volumes:
+  zidp_dev_postgres:
