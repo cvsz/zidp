@@ -81,6 +81,7 @@ infra/
     docker-compose.yml
     keycloak/
 scripts/
+CODEOWNERS
 AGENTS.md
 SECURITY.md
 IMPLEMENTATION-CHECKLIST.md

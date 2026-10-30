@@ -32,6 +32,7 @@ jobs:
             CHANGELOG.md
             ROADMAP.md
             IMPLEMENTATION-CHECKLIST.md
+            CODEOWNERS
             .github/PULL_REQUEST_TEMPLATE.md
             .github/dependabot.yml
           )

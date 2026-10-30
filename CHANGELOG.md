@@ -9,6 +9,7 @@ All notable changes to ZIDP should be documented here. The format follows Keep a
 - OIDC smoke tests for issuer discovery, JWKS, PKCE S256, exact redirect rejection, and disabled implicit/password grants
 - ADR documenting the protocol-engine boundary and deferred production adoption
 - CI integration job that starts the local IdP with ephemeral credentials and removes its database volume after testing
+- CODEOWNERS policy assigning all repository paths to the independent policedbc reviewer
 
 ### Changed
 - Replaced placeholder Makefile targets with real local development lifecycle commands
@@ -17,6 +18,7 @@ All notable changes to ZIDP should be documented here. The format follows Keep a
 ### Security
 - Bound the local IdP port to loopback and isolated its Docker network
 - Disabled implicit flow, Resource Owner Password Credentials, and service accounts in the sample public client
+- Masked ephemeral CI administrator/database passwords before exporting them to subsequent steps
 - Kept tenant authorization, production credentials, and production issuer configuration out of the development realm
 
 ### Existing product definition

@@ -8,8 +8,8 @@ This checklist is the release gate for cvsz/zidp. A checked documentation item i
 - [x] Primary portal target is account.zeaz.dev.
 - [x] AGENTS.md defines the repository/security contract.
 - [x] Canonical AI production prompt exists.
-- [ ] Configure CODEOWNERS for security-sensitive paths.
-- [ ] Configure protected main branch/ruleset with required checks and review.
+- [x] CODEOWNERS file assigns all repository paths to @policedbc.
+- [ ] Configure protected main branch/ruleset requiring independent approval and CODEOWNERS review.
 
 ## Local development foundation (not a production gate)
 - [x] Local-only Keycloak 26.8.1 runtime definition
