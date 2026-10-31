@@ -90,6 +90,12 @@ jobs:
       - name: Verify OIDC discovery, JWKS, PKCE and negative grants
         run: python3 scripts/test-idp-dev.py
 
+      - name: Capture Keycloak startup logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          docker compose --project-directory . -f infra/dev/docker-compose.yml logs --no-color --timestamps --tail=200 keycloak || true
+
       - name: Remove ephemeral runtime and database volume
         if: always() && steps.credentials.outcome == 'success'
         run: docker compose --project-directory . -f infra/dev/docker-compose.yml down --volumes --remove-orphans
