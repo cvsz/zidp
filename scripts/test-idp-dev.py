@@ -68,14 +68,21 @@ def main() -> int:
     deadline = time.monotonic() + 180
     discovery_status: int | None = None
     discovery_body = b""
+    discovery_target = discovery_url
 
     while time.monotonic() < deadline:
-        discovery_status, discovery_body, _ = request(discovery_url)
+        discovery_status, discovery_body, discovery_target = request(discovery_url)
         if discovery_status == 200:
             break
         time.sleep(2)
 
-    require(discovery_status == 200, "OIDC discovery did not become available")
+    if discovery_status != 200:
+        response_detail = discovery_body.decode("utf-8", errors="replace").strip()[:512]
+        raise AssertionError(
+            "OIDC discovery did not become available "
+            f"(status={discovery_status}, target={discovery_target}, "
+            f"response={response_detail!r})"
+        )
     discovery = json.loads(discovery_body)
     require(discovery.get("issuer") == ISSUER, "OIDC issuer does not match the pinned local issuer")
 
