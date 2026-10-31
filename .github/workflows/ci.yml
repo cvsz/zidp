@@ -93,10 +93,21 @@ jobs:
       - name: Verify OIDC discovery, JWKS, PKCE and negative grants
         run: python3 scripts/test-idp-dev.py
 
-      - name: Capture Keycloak startup logs on failure
+      - name: Capture Keycloak startup and host-port diagnostics on failure
         if: failure()
         shell: bash
         run: |
+          set +e
+          container_id="$(docker compose --project-directory . -f infra/dev/docker-compose.yml ps -q keycloak)"
+          if [ -n "$container_id" ]; then
+            docker inspect --format 'port_bindings={{json .NetworkSettings.Ports}}' "$container_id"
+          else
+            echo "Keycloak container ID unavailable"
+          fi
+          docker compose --project-directory . -f infra/dev/docker-compose.yml port keycloak 8080 || true
+          curl --noproxy '*' --connect-timeout 3 --max-time 5 --silent --show-error \
+            --output /dev/null --write-out 'host_probe_http_status=%{http_code}\n' \
+            "$ZIDP_BASE_URL/realms/$ZIDP_REALM/.well-known/openid-configuration" || true
           docker compose --project-directory . -f infra/dev/docker-compose.yml logs --no-color --timestamps --tail=200 keycloak || true
 
       - name: Remove ephemeral runtime and database volume
