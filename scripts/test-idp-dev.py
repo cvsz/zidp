@@ -12,13 +12,16 @@ import sys
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+from urllib.request import ProxyHandler, Request, build_opener
 
 BASE_URL = os.environ.get("ZIDP_BASE_URL", "http://127.0.0.1:8080").rstrip("/")
 REALM = os.environ.get("ZIDP_REALM", "zeaz-dev")
 CLIENT_ID = "zeaz-web-local"
 CALLBACK = "http://127.0.0.1:3000/oidc/callback"
 ISSUER = f"{BASE_URL}/realms/{REALM}"
+
+# The smoke test targets the isolated local Keycloak runtime; ignore ambient proxy settings.
+LOCAL_OPENER = build_opener(ProxyHandler({}))
 
 
 def request(url: str, data: bytes | None = None) -> tuple[int | None, bytes, str]:
@@ -27,7 +30,7 @@ def request(url: str, data: bytes | None = None) -> tuple[int | None, bytes, str
         headers["Content-Type"] = "application/x-www-form-urlencoded"
     req = Request(url, data=data, headers=headers)
     try:
-        with urlopen(req, timeout=5) as response:
+        with LOCAL_OPENER.open(req, timeout=5) as response:
             return response.status, response.read(), response.geturl()
     except HTTPError as error:
         return error.code, error.read(), error.geturl()
