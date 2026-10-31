@@ -81,6 +81,9 @@ jobs:
           printf 'ZIDP_REALM=%s\n' "zeaz-dev" >> "$GITHUB_ENV"
           unset db_password admin_password
 
+      - name: Verify local OIDC requests bypass environment proxies
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
       - name: Validate Compose configuration
         run: docker compose --project-directory . -f infra/dev/docker-compose.yml config --quiet
 
