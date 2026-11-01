@@ -12,7 +12,7 @@ import sys
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import ProxyHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 BASE_URL = os.environ.get("ZIDP_BASE_URL", "http://127.0.0.1:8080").rstrip("/")
 REALM = os.environ.get("ZIDP_REALM", "zeaz-dev")
@@ -22,6 +22,14 @@ ISSUER = f"{BASE_URL}/realms/{REALM}"
 
 # The smoke test targets the isolated local Keycloak runtime; ignore ambient proxy settings.
 LOCAL_OPENER = build_opener(ProxyHandler({}))
+
+
+class _NoRedirectHandler(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+NO_REDIRECT_OPENER = build_opener(ProxyHandler({}), _NoRedirectHandler())
 
 
 def request(url: str, data: bytes | None = None) -> tuple[int | None, bytes, str]:
@@ -45,7 +53,7 @@ def require(condition: bool, message: str) -> None:
 
 def authorization_status(
     authorization_endpoint: str, *, redirect_uri: str, response_type: str = "code"
-) -> int | None:
+) -> tuple[int | None, str]:
     verifier = secrets.token_urlsafe(48)
     challenge = base64.urlsafe_b64encode(
         hashlib.sha256(verifier.encode("ascii")).digest()
@@ -62,8 +70,14 @@ def authorization_status(
             "code_challenge_method": "S256",
         }
     )
-    status, _, _ = request(f"{authorization_endpoint}?{query}")
-    return status
+    req = Request(f"{authorization_endpoint}?{query}", headers={"Accept": "text/html"})
+    try:
+        with NO_REDIRECT_OPENER.open(req, timeout=5) as response:
+            return response.status, response.headers.get("Location", "")
+    except HTTPError as error:
+        return error.code, error.headers.get("Location", "")
+    except URLError as error:
+        return None, str(error.reason)
 
 
 def main() -> int:
@@ -112,28 +126,42 @@ def main() -> int:
     require(bool(keys), "JWKS contains no signing keys")
     require(all(key.get("kid") and key.get("kty") for key in keys), "JWKS contains an incomplete key")
 
-    valid_status = authorization_status(
+    valid_status, valid_location = authorization_status(
         discovery["authorization_endpoint"], redirect_uri=CALLBACK
     )
-    require(valid_status == 200, f"valid Authorization Code + PKCE request returned {valid_status}")
+    require(
+        valid_status == 200,
+        f"valid Authorization Code + PKCE request returned {valid_status} "
+        f"(location={valid_location!r})",
+    )
 
-    invalid_redirect_status = authorization_status(
+    invalid_redirect_status, invalid_redirect_location = authorization_status(
         discovery["authorization_endpoint"],
         redirect_uri="http://attacker.invalid/oidc/callback",
     )
     require(
         invalid_redirect_status is not None and invalid_redirect_status >= 400,
-        f"unregistered redirect URI was not rejected (status={invalid_redirect_status})",
+        "unregistered redirect URI was not rejected "
+        f"(status={invalid_redirect_status}, location={invalid_redirect_location!r})",
     )
 
-    implicit_status = authorization_status(
+    implicit_status, implicit_location = authorization_status(
         discovery["authorization_endpoint"],
         redirect_uri=CALLBACK,
         response_type="token",
     )
+    implicit_rejected = (
+        implicit_status is not None and implicit_status >= 400
+    ) or (
+        implicit_status is not None
+        and 300 <= implicit_status < 400
+        and "error=unsupported_response_type" in implicit_location
+        and "access_token=" not in implicit_location
+    )
     require(
-        implicit_status is not None and implicit_status >= 400,
-        f"implicit response type was not rejected (status={implicit_status})",
+        implicit_rejected,
+        "implicit response type was not rejected "
+        f"(status={implicit_status}, location={implicit_location!r})",
     )
 
     password_request = urlencode(
