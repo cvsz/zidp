@@ -30,7 +30,7 @@ services:
       KC_DB_PASSWORD: ${ZIDP_DB_PASSWORD:?set ZIDP_DB_PASSWORD in .env}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${ZIDP_ADMIN_USERNAME:?set ZIDP_ADMIN_USERNAME in .env}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${ZIDP_ADMIN_PASSWORD:?set ZIDP_ADMIN_PASSWORD in .env}
-      KC_HOSTNAME: http://127.0.0.1:8080
+      KC_HOSTNAME: ${ZIDP_HOSTNAME:-http://127.0.0.1:8080}
       KC_HOSTNAME_STRICT: "true"
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
@@ -49,6 +49,28 @@ services:
     init: true
     security_opt:
       - no-new-privileges:true
+
+  oidc-smoke:
+    image: python:3.12-slim
+    entrypoint: ["python"]
+    command: ["/opt/zidp/test-idp-dev.py"]
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      ZIDP_BASE_URL: ${ZIDP_BASE_URL:-http://keycloak:8080}
+      ZIDP_REALM: ${ZIDP_REALM:-zeaz-dev}
+    volumes:
+      - ./scripts/test-idp-dev.py:/opt/zidp/test-idp-dev.py:ro
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    networks:
+      - zidp-dev
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
 
 networks:
   zidp-dev:
