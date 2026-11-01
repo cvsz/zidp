@@ -155,7 +155,10 @@ def main() -> int:
     ) or (
         implicit_status is not None
         and 300 <= implicit_status < 400
-        and "error=unsupported_response_type" in implicit_location
+        and (
+            "error=unsupported_response_type" in implicit_location
+            or "error=unauthorized_client" in implicit_location
+        )
         and "access_token=" not in implicit_location
     )
     require(
