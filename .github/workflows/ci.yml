@@ -32,6 +32,7 @@ jobs:
             CHANGELOG.md
             ROADMAP.md
             IMPLEMENTATION-CHECKLIST.md
+            CODEOWNERS
             .github/PULL_REQUEST_TEMPLATE.md
             .github/dependabot.yml
           )
@@ -51,4 +52,64 @@ jobs:
       - name: Validate YAML syntax
         shell: bash
         run: |
+          set -euo pipefail
           ruby -e 'require "yaml"; Dir.glob(".github/**/*.{yml,yaml}").each { |f| YAML.load_file(f); puts "ok #{f}" }'
+
+  local-oidc-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate realm import JSON
+        run: python3 -m json.tool infra/dev/keycloak/zeaz-dev-realm.json >/dev/null
+
+      - name: Generate and mask ephemeral local credentials
+        id: credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          db_password="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 32)"
+          echo "::add-mask::$db_password"
+          echo "::add-mask::$admin_password"
+          printf 'ZIDP_DB_PASSWORD=%s\n' "$db_password" >> "$GITHUB_ENV"
+          printf 'ZIDP_ADMIN_USERNAME=%s\n' "ci-local-admin" >> "$GITHUB_ENV"
+          printf 'ZIDP_ADMIN_PASSWORD=%s\n' "$admin_password" >> "$GITHUB_ENV"
+          printf 'ZIDP_BASE_URL=%s\n' "http://keycloak:8080" >> "$GITHUB_ENV"
+          printf 'ZIDP_HOSTNAME=%s\n' "http://keycloak:8080" >> "$GITHUB_ENV"
+          printf 'ZIDP_REALM=%s\n' "zeaz-dev" >> "$GITHUB_ENV"
+          unset db_password admin_password
+
+      - name: Verify local OIDC requests bypass environment proxies
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Validate Compose configuration
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml config --quiet
+
+      - name: Start isolated Keycloak and PostgreSQL
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml up -d --wait --wait-timeout 240 postgres keycloak
+
+      - name: Verify OIDC discovery, JWKS, PKCE and negative grants
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml run --rm --no-deps oidc-smoke
+
+      - name: Capture Keycloak and PostgreSQL diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          docker compose --project-directory . -f infra/dev/docker-compose.yml ps --all
+          for service in keycloak postgres; do
+            container_id="$(docker compose --project-directory . -f infra/dev/docker-compose.yml ps -q "$service")"
+            if [ -n "$container_id" ]; then
+              docker inspect --format "service=$service state={{.State.Status}} exit={{.State.ExitCode}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}} ports={{json .NetworkSettings.Ports}}" "$container_id"
+            else
+              echo "$service container ID unavailable"
+            fi
+          done
+          docker compose --project-directory . -f infra/dev/docker-compose.yml logs --no-color --timestamps --tail=200 keycloak postgres || true
+
+      - name: Remove ephemeral runtime and database volume
+        if: always() && steps.credentials.outcome == 'success'
+        run: docker compose --project-directory . -f infra/dev/docker-compose.yml down --volumes --remove-orphans
